@@ -55,46 +55,39 @@ namespace Bootstrap4NHibernate
 
         public void Populate(params Assembly[] dataFixtureAssemblies)
         {
-            var fixtureVertices = new Dictionary<Type, Vertex>();
             var fixtureContainer = new FixtureContainer();
 
-            foreach (var dataFixtureType in dataFixtureAssemblies.SelectMany(dataFixtureAssembly => dataFixtureAssembly.GetTypes().Where(t => typeof (DataFixture).IsAssignableFrom(t))))
-                fixtureContainer.AddDataFixture((DataFixture) Activator.CreateInstance(dataFixtureType));
-               
-            using (var session = new Session(_sessionFactory.OpenSession()))
-            using (var transaction = session.BeginTransaction())
+        foreach (var dataFixtureType in dataFixtureAssemblies.SelectMany(dataFixtureAssembly => dataFixtureAssembly.GetTypes().Where(t => typeof (DataFixture).IsAssignableFrom(t))))
+            fixtureContainer.AddDataFixture((DataFixture) Activator.CreateInstance(dataFixtureType));
+
+            var fixtureVertices = fixtureContainer.All.ToDictionary(fixture => fixture.GetType(), fixture => new Vertex(() =>
             {
-                foreach (var fixture in fixtureContainer.All)
+                using (var session = new Session(_sessionFactory.OpenSession()))
+                using (var transaction = session.BeginTransaction())
                 {
-                    fixtureVertices.Add(
-                        fixture.GetType(),
-                        new Vertex(() =>
-                        {
-                            foreach (var entity in fixture.GetEntities(fixtureContainer))
-                            {
-                                session.Save(entity);
-                            }
-                        }));
+                    foreach (var entity in fixture.GetEntities(fixtureContainer))
+                    {
+                        session.Save(entity);
+                    }
+                    transaction.Commit();
                 }
+            }));
 
-                foreach (var dataFixtureType in fixtureVertices.Keys)
-                {
-                    var dataFixture = fixtureContainer.Get(dataFixtureType);
-                    var vertex = fixtureVertices[dataFixtureType];
+            foreach (var dataFixtureType in fixtureVertices.Keys)
+            {
+                var dataFixture = fixtureContainer.Get(dataFixtureType);
+                var vertex = fixtureVertices[dataFixtureType];
 
-                    vertex.AddDependencies(dataFixture.Dependencies.Select(d => fixtureVertices[d]).ToArray());
-                }
-
-                var graph = new DirectedAcyclicGraph(fixtureVertices.Values);
-                var graphExecutive = new ConcurrentGraphExecutive(graph);
-
-                graphExecutive.ExecuteAndWait();
-
-                if (graphExecutive.VerticesFailed.Any())
-                    throw new AggregateException(graphExecutive.VerticesFailed.Select(e=>e.Value));
-                 
-                transaction.Commit();
+                vertex.AddDependencies(dataFixture.Dependencies.Select(d => fixtureVertices[d]).ToArray());
             }
+
+            var graph = new DirectedAcyclicGraph(fixtureVertices.Values);
+            var graphExecutive = new ConcurrentGraphExecutive(graph);
+
+            graphExecutive.ExecuteAndWait();
+
+            if (graphExecutive.VerticesFailed.Any())
+                throw new AggregateException(graphExecutive.VerticesFailed.Select(e=>e.Value));
         }
     }
 }

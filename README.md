@@ -141,11 +141,11 @@ Then we can create a Bootstrap4NHibernate.Database passing the database connecti
 The Database class uses https://github.com/myles-mcdonnell/MPM.PDAG to determine the maximum level
 of concurrency when inserting the data.  Taking the above example Teams will be created first then Stadiums and Players will be created concurrently.  This can decrease data creation time significantly for complex/large schemas.
 
-Data is inserted in a single transaction, so it's all or nothing.
+Each DateFixture is executed in it's own single transaction.
 
 Also note that DataFixture classes can get references to other DataFixtures via the FixtureContainer and in this way can reference other entities without querying the database which is also a significant performance boost.
 
-See the example console application in the repo for a working exmaple.  This uses postgress but can be changed to any NHiberante supported DB.
+See the example console application in the repo for a working exmaple.  This uses postgres but can be changed to any NHiberante supported DB.
 
 
 
