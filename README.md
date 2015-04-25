@@ -2,6 +2,8 @@
 
 A library for defining data to be inserted into a database via nhibernate in code.
 
+Also available via NuGet: https://www.nuget.org/packages/Bootstrap4NHibernate
+
 Given a simple schema with three tables/entities:
 
 <pre>
@@ -168,6 +170,8 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+
+
 
 
 
