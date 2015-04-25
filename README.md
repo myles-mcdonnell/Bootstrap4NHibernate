@@ -21,7 +21,6 @@ Players have one Team
 
 Once we have created the model and class maps correctly we can create DataFixture classes
 
-'''
 
     public class TeamFixture : Bootstrap4NHibernate.Data.DataFixture
     {
@@ -97,59 +96,81 @@ Once we have created the model and class maps correctly we can create DataFixtur
             };
         }
     }
-	
-'''
+
 
 Then we can create a Bootstrap4NHibernate.Database passing the database connection, class map assembly and data fixture assemblies and have the database class create the schema (optional) and populate the data:
 
-'''
-
 	static void Main(string[] args)
-        {
-            var dbConf = PostgreSQLConfiguration.PostgreSQL82.ConnectionString(c => c
-                .Database("Bootstrap4NHibernate")
-                .Host("localhost")
-                .Port(5432)
-                .Username("postgres")
-                .Password(""));
+	{
+	    var dbConf = PostgreSQLConfiguration.PostgreSQL82.ConnectionString(c => c
+		.Database("Bootstrap4NHibernate")
+		.Host("localhost")
+		.Port(5432)
+		.Username("postgres")
+		.Password(""));
 
-            var database = new Database(dbConf, Assembly.GetExecutingAssembly(), true);
+	    var database = new Database(dbConf, Assembly.GetExecutingAssembly(), true);
 
-            database.Populate(Assembly.GetExecutingAssembly());
+	    database.Populate(Assembly.GetExecutingAssembly());
 
-            var sessionFactory = Fluently.Configure()
-                .Database(() => dbConf)
-                .Mappings(m => m.FluentMappings.AddFromAssembly(Assembly.GetExecutingAssembly()))
-                .BuildSessionFactory();
+	    var sessionFactory = Fluently.Configure()
+		.Database(() => dbConf)
+		.Mappings(m => m.FluentMappings.AddFromAssembly(Assembly.GetExecutingAssembly()))
+		.BuildSessionFactory();
 
-            using (var session = sessionFactory.OpenSession())
-            {
-                foreach (var team in session.Query<Team>())
-                {
-                    Console.WriteLine("Team: " + team.Name);
-                    Console.WriteLine("Stadium: " + team.Stadium.Name);
-                    Console.WriteLine("Players: ");
-                    foreach (var player in team.Players)
-                    {
-                        Console.WriteLine(player.Name);
-                    }
-                    Console.WriteLine();
-                }
-            }
+	    using (var session = sessionFactory.OpenSession())
+	    {
+		foreach (var team in session.Query<Team>())
+		{
+		    Console.WriteLine("Team: " + team.Name);
+		    Console.WriteLine("Stadium: " + team.Stadium.Name);
+		    Console.WriteLine("Players: ");
+		    foreach (var player in team.Players)
+		    {
+		        Console.WriteLine(player.Name);
+		    }
+		    Console.WriteLine();
+		}
+	    }
 
-            Console.ReadLine();
-        }
-
-'''
+	    Console.ReadLine();
+	}
 
 The Database class uses https://github.com/myles-mcdonnell/MPM.PDAG to determine the maximum level
 of concurrency when inserting the data.  Taking the above example Teams will be created first then Stadiums and Players will be created concurrently.  This can decrease data creation time significantly for complex/large schemas.
 
 Data is inserted in a single transaction, so it's all or nothing.
 
-Also note that <pre>DataFixture</pre> classes can get references to other DataFixtures and in this way can reference other entities without querying the database which is also a significant performance boost.
+Also note that DataFixture classes can get references to other DataFixtures via the FixtureContainer and in this way can reference other entities without querying the database which is also a significant performance boost.
 
 See the example console application in the repo for a working exmaple.  This uses postgress but can be changed to any NHiberante supported DB.
+
+
+
+The MIT License (MIT)
+
+Copyright (c) 2015 Shiftkey Software
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+
+
 
 
 
