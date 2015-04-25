@@ -4,20 +4,20 @@ A library for defining data to be inserted into a database via nhibernate in cod
 
 Given a simple schema with three tables/entities:
 
-Team
-Player
-Stadium
+*Team
+*Player
+*Stadium
 
 Related like so
 
-Teams have many Players
-Stadiums have many Teams
-Teams have one Stadium
-Players have one Team
+*Teams have many Players
+*Stadiums have many Teams
+*Teams have one Stadium
+*Players have one Team
 
 once we have created the model and class maps correctly we can create DataFixture classes
 
-<pre>
+'''
 
 public class TeamFixture : Bootstrap4NHibernate.Data.DataFixture
     {
@@ -94,12 +94,12 @@ public class PlayerFixture : Bootstrap4NHibernate.Data.DataFixture
         }
     }
 	
-	</pre>
+'''
 
-	Then we can create a <pre>Bootstrap4NHibernate.Database</pre> passing the database connection, class map assembly and data fixture assemblies and have the database class
+	Then we can create a Bootstrap4NHibernate.Database passing the database connection, class map assembly and data fixture assemblies and have the database class
 	create the schema (optional) and populate the data:
 
-	<pre>
+'''
 
 	static void Main(string[] args)
         {
@@ -137,9 +137,9 @@ public class PlayerFixture : Bootstrap4NHibernate.Data.DataFixture
             Console.ReadLine();
         }
 
-	</pre>
+'''
 
-	The Database class uses <a href="https://github.com/myles-mcdonnell/MPM.PDAG">https://github.com/myles-mcdonnell/MPM.PDAG</a> to determine the maximum level
+	The Database class uses https://github.com/myles-mcdonnell/MPM.PDAG to determine the maximum level
 	of concurrency when inserting the data.  Taking the above example Teams will be created first then Stadiums and Players will be created concurrently.  This can decrease
 	data creation time significantly for complex/large schemas.
 
