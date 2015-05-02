@@ -21,7 +21,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.*/
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Bootstrap4NHibernate.Data;
@@ -29,6 +28,7 @@ using FluentNHibernate.Cfg;
 using FluentNHibernate.Cfg.Db;
 using MPM.PDAG;
 using NHibernate;
+using NHibernate.Cfg;
 using NHibernate.Tool.hbm2ddl;
 
 namespace Bootstrap4NHibernate
@@ -37,7 +37,7 @@ namespace Bootstrap4NHibernate
     {
         private readonly ISessionFactory _sessionFactory;
 
-        public Database(IPersistenceConfigurer persistenceConfigurer, Assembly classMapAssembly,
+        public Database(IPersistenceConfigurer persistenceConfigurer, Assembly classMapAssembly, Action<Configuration> configAction = null,
             bool resetSchema = false)
         {
             _sessionFactory = Fluently.Configure()
@@ -46,10 +46,11 @@ namespace Bootstrap4NHibernate
                 .ExposeConfiguration(config =>
                 {
                     if (resetSchema)
-                    {
                         new SchemaExport(config).Create(false, true);
-                    }
+
+                    configAction(config);
                 })
+                
                 .BuildSessionFactory();
         }
 
@@ -66,9 +67,8 @@ namespace Bootstrap4NHibernate
                 using (var transaction = session.BeginTransaction())
                 {
                     foreach (var entity in fixture.GetEntities(fixtureContainer))
-                    {
-                        session.Save(entity);
-                    }
+                        session.SaveOrUpdate(entity);
+                    
                     transaction.Commit();
                 }
             }));
