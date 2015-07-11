@@ -25,7 +25,7 @@ using Bootstrap4NHibernate.Example.Model;
 
 namespace Bootstrap4NHibernate.Example.DataFixtures
 {
-    public class StadiumFixture : Bootstrap4NHibernate.Data.DataFixture
+    public class StadiumFixture : Data.DataFixture
     {
         public readonly Stadium MegaBowl = new Stadium {Name = "Mega Bowl"};
         public readonly Stadium MuddyField = new Stadium {Name = "Muddy Field"};
@@ -35,7 +35,7 @@ namespace Bootstrap4NHibernate.Example.DataFixtures
             get { return new []{typeof(TeamFixture)}; }
         }
 
-        public override object[] GetEntities(Bootstrap4NHibernate.Data.IFixtureContainer fixtureContainer)
+        public override object[] GetEntities(Data.IFixtureContainer fixtureContainer)
         {
             var teamFixture = fixtureContainer.Get<TeamFixture>();
 

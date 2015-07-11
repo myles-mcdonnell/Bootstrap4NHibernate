@@ -37,9 +37,15 @@ namespace Bootstrap4NHibernate
     {
         private readonly ISessionFactory _sessionFactory;
 
-        public Database(IPersistenceConfigurer persistenceConfigurer, Assembly classMapAssembly, Action<Configuration> configAction = null,
+        public Database(
+            IPersistenceConfigurer persistenceConfigurer, 
+            Assembly classMapAssembly, 
+            Action<Configuration> configAction = null,
             bool resetSchema = false)
         {
+            if (configAction==null)
+                configAction = configuration => { };
+
             _sessionFactory = Fluently.Configure()
                 .Database(() => persistenceConfigurer)
                 .Mappings(m => m.FluentMappings.AddFromAssembly(classMapAssembly))
@@ -58,8 +64,8 @@ namespace Bootstrap4NHibernate
         {
             var fixtureContainer = new FixtureContainer();
 
-        foreach (var dataFixtureType in dataFixtureAssemblies.SelectMany(dataFixtureAssembly => dataFixtureAssembly.GetTypes().Where(t => typeof (DataFixture).IsAssignableFrom(t))))
-            fixtureContainer.AddDataFixture((DataFixture) Activator.CreateInstance(dataFixtureType));
+            foreach (var dataFixtureType in dataFixtureAssemblies.SelectMany(dataFixtureAssembly => dataFixtureAssembly.GetTypes().Where(t => typeof (DataFixture).IsAssignableFrom(t))))
+                fixtureContainer.AddDataFixture((DataFixture) Activator.CreateInstance(dataFixtureType));
 
             var fixtureVertices = fixtureContainer.All.ToDictionary(fixture => fixture.GetType(), fixture => new Vertex(() =>
             {
