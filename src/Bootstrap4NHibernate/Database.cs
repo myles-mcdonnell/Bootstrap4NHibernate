@@ -73,7 +73,7 @@ namespace Bootstrap4NHibernate
                 using (var transaction = session.BeginTransaction())
                 {
                     foreach (var entity in fixture.GetEntities(fixtureContainer))
-                        session.SaveOrUpdate(entity);
+                        session.Save(entity);
                     
                     transaction.Commit();
                 }

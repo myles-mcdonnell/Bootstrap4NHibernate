@@ -5,5 +5,5 @@ using System.Reflection;
 [assembly: AssemblyCopyright("Copyright © Shiftkey Software 2015")]
 [assembly: AssemblyTrademark("")]
 
-[assembly: AssemblyVersion("1.0.3.*")]
-[assembly: AssemblyFileVersion("1.0.3.0")]
+[assembly: AssemblyVersion("1.0.4.*")]
+[assembly: AssemblyFileVersion("1.0.4.0")]

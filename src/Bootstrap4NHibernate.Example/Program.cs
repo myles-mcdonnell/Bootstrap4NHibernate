@@ -36,11 +36,11 @@ namespace Bootstrap4NHibernate.Example
             try
             {
                 //var dbConf = PostgreSQLConfiguration.PostgreSQL82.ConnectionString(c => c
-                //    .Database("Bootstrap4NHibernate")
-                //    .Host("localhost")
-                //    .Port(5432)
-                //    .Username("postgres")
-                //    .Password(""));
+                    //.Database("Bootstrap4NHibernate")
+                    //.Host("172.17.8.101")
+                    //.Port(5432)
+                    //.Username("postgres")
+                    //.Password("postgres"));
 
                 var dbConf =
                     MsSqlConfiguration.MsSql2012.ConnectionString(

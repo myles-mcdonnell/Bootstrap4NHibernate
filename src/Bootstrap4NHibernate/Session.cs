@@ -39,6 +39,11 @@ namespace Bootstrap4NHibernate
             _session.SaveOrUpdate(entity);
         }
 
+        public void Save<T>(T entity)
+        {
+            _session.Save(entity);
+        }
+
         public void Dispose() 
         {
             _session.Dispose();
